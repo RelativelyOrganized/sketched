@@ -1,0 +1,13 @@
+[package]
+name = "sketched"
+version = "0.1.0"
+authors = ["Emmanuel Durand <emmanueldurand@pm.me>"]
+edition = "2018"
+license = "GPL"
+repository = "https://github.com/RelativelyOrganized/sketched"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+iced = "0.2.0"

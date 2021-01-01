@@ -1,4 +1,4 @@
-use glfw::{Action, Context as _, Key, WindowEvent};
+use glfw::{Action, MouseButton, Context as _, Key, WindowEvent};
 use luminance::context::GraphicsContext as _;
 use luminance::pipeline::PipelineState;
 use luminance::render_state::RenderState;
@@ -122,8 +122,12 @@ fn main() {
   //// it whenever the window dimensions change).
   let mut back_buffer = surface.back_buffer().unwrap();
   let mut resize = false;
+  let mut points: Vec<(f64, f64)> = Vec::new();
+  let mut left_button_pressed = false;
 
   'app: loop {
+    let mut cursor_position: (f64, f64) = (-1.0, -1.0);
+
     // For all the events on the surface.
     surface.window.glfw.poll_events();
     for (_, event) in glfw::flush_messages(&surface.events_rx) {
@@ -138,16 +142,29 @@ fn main() {
 
         // Get cursor position
         WindowEvent::CursorPos(x, y) => {
-            println!("{}, {}", x, y);
+            cursor_position = (x, y);
         }
 
         // Get mouse buttons
-        WindowEvent::MouseButton(button, action, modifiers) => {
-            println!("{:?}, {:?}, {:?}", button, action, modifiers);
+        WindowEvent::MouseButton(button, action, _modifiers) => {
+            if button != MouseButton::Button1 {
+                continue;
+            }
+
+            match action {
+                Action::Press => left_button_pressed = true,
+                Action::Release => left_button_pressed = false,
+                _ => (),
+            }
         }
 
         _ => (),
       }
+    }
+
+    //println!("{:?}, {:?}", left_button_pressed, cursor_position);
+    if left_button_pressed && cursor_position != (-1.0, -1.0) {
+        points.push(cursor_position);
     }
 
     if resize {
@@ -179,6 +196,7 @@ fn main() {
     // screen.
     if render.is_ok() {
       surface.window.swap_buffers();
+      println!("{:?}", points);
     } else {
       break 'app;
     }
